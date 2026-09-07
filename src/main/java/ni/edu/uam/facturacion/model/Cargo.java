@@ -9,11 +9,13 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
+
 public class Cargo {
 
     private Integer id;
     private String nombre;
-    private Double salarioBase;
+    private String descripcion;
+
 
     @Override
     public String toString() {

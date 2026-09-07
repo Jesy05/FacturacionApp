@@ -1,10 +1,10 @@
 package ni.edu.uam.facturacion.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import java.math.BigDecimal;
+
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -12,13 +12,11 @@ import lombok.Setter;
 public class Producto {
 
     private Integer id;
+    private String codigo;
     private String nombre;
-    private Double precio;
-    private Integer existencia;
     private Categoria categoria;
-
-    @Override
-    public String toString() {
-        return nombre;
-    }
+    private BigDecimal precioVenta;
+    private int existencia;
+    private String rutaImagen;
+    private boolean activo;
 }
