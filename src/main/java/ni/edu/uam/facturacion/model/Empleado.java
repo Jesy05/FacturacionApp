@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -13,11 +15,11 @@ public class Empleado {
 
     private Integer id;
     private String nombre;
-    private String cedula;
+    private String apellidos;
     private Cargo cargo;
+    private LocalDate fechaDeContratacion;
+    private String cedula;
+    private boolean ativo;
 
-    @Override
-    public String toString() {
-        return nombre;
-    }
+    
 }
