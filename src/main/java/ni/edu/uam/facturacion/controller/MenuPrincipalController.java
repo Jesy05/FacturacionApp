@@ -12,6 +12,11 @@ public class MenuPrincipalController {
     }
 
     @FXML
+    private void abrirCategorias() throws IOException {
+        SceneManager.switchTo("/ni/edu/uam/facturacion/fxml/categoria-view.fxml");
+    }
+
+    @FXML
     private void abrirProductos() throws IOException {
         SceneManager.switchTo("/ni/edu/uam/facturacion/fxml/producto-view.fxml");
     }
