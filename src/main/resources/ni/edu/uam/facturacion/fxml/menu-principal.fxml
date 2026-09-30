@@ -7,7 +7,9 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" spacing="15.0" xmlns="http://javafx.com/javafx"
+<VBox alignment="CENTER" spacing="15.0" styleClass="fondo"
+      stylesheets="@../css/estilos.css"
+      xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="ni.edu.uam.facturacion.controller.MenuPrincipalController">
     <padding>
@@ -20,9 +22,9 @@
         </image>
     </ImageView>
     <Label text="Proyecto de JavaFX - Programación de Aplicaciones de Escritorio"
-           style="-fx-font-size: 13px; -fx-text-fill: #555555;"/>
+           styleClass="subtitulo"/>
 
-    <Label text="Sistema de Facturación"/>
-    <Button text="Categorías" onAction="#abrirCategorias"/>
-    <Button text="Productos" onAction="#abrirProductos"/>
+    <Label text="Sistema de Facturación" styleClass="titulo"/>
+    <Button text="Categorías" styleClass="boton-menu" onAction="#abrirCategorias"/>
+    <Button text="Productos" styleClass="boton-menu" onAction="#abrirProductos"/>
 </VBox>

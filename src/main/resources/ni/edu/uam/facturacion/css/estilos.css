@@ -1,0 +1,102 @@
+/* Estilos generales de la aplicación (tema celeste) */
+
+.fondo {
+    -fx-background-color: #EAF6FD;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 13px;
+
+    /* Colores de selección y foco de los controles */
+    -fx-accent: #4FC3F7;
+    -fx-focus-color: #0288D1;
+    -fx-faint-focus-color: #0288D122;
+}
+
+/* Títulos */
+
+.titulo {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0277BD;
+}
+
+.subtitulo {
+    -fx-font-size: 13px;
+    -fx-text-fill: #4A6B7C;
+}
+
+/* Botones */
+
+.button {
+    -fx-background-color: #0288D1;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-padding: 6 14;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #0277BD;
+}
+
+.button:pressed {
+    -fx-background-color: #01579B;
+}
+
+.boton-menu {
+    -fx-pref-width: 200px;
+    -fx-font-size: 14px;
+    -fx-padding: 10 14;
+}
+
+/* Barra buscadora */
+
+.buscador {
+    -fx-background-color: white;
+    -fx-border-color: #4FC3F7;
+    -fx-border-width: 2;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-padding: 6 14;
+}
+
+.buscador:focused {
+    -fx-border-color: #0288D1;
+}
+
+.resultados {
+    -fx-text-fill: #4A6B7C;
+}
+
+/* Campos del formulario */
+
+.text-field, .combo-box {
+    -fx-background-radius: 4;
+}
+
+/* Tabla */
+
+.table-view {
+    -fx-border-color: #81D4FA;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+.table-view .column-header,
+.table-view .column-header-background,
+.table-view .column-header-background .filler {
+    -fx-background-color: #B3E5FC;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #01579B;
+    -fx-font-weight: bold;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #F5FBFE;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #4FC3F7;
+}
