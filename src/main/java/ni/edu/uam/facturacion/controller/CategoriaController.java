@@ -5,10 +5,13 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -29,6 +32,12 @@ public class CategoriaController {
     private CheckBox chkActiva;
 
     @FXML
+    private TextField txtBuscar;
+
+    @FXML
+    private Label lblResultados;
+
+    @FXML
     private TableView<Categoria> tablaCategorias;
 
     @FXML
@@ -44,6 +53,9 @@ public class CategoriaController {
 
     private final ObservableList<Categoria> categorias = FXCollections.observableArrayList();
 
+    // Lista que muestra solo las categorías que coinciden con la búsqueda
+    private final FilteredList<Categoria> categoriasFiltradas = new FilteredList<>(categorias, c -> true);
+
     private Categoria categoriaSeleccionada;
 
     @FXML
@@ -53,7 +65,13 @@ public class CategoriaController {
         colActiva.setCellValueFactory(c -> new SimpleBooleanProperty(c.getValue().isActiva()));
         colActiva.setCellFactory(CheckBoxTableCell.forTableColumn(colActiva));
 
-        tablaCategorias.setItems(categorias);
+        // SortedList permite seguir ordenando la tabla al hacer clic en las columnas
+        SortedList<Categoria> categoriasOrdenadas = new SortedList<>(categoriasFiltradas);
+        categoriasOrdenadas.comparatorProperty().bind(tablaCategorias.comparatorProperty());
+        tablaCategorias.setItems(categoriasOrdenadas);
+
+        // Cada vez que se escribe en el buscador se vuelve a filtrar la tabla
+        txtBuscar.textProperty().addListener((obs, anterior, texto) -> filtrar(texto));
 
         tablaCategorias.getSelectionModel().selectedItemProperty()
                 .addListener((obs, anterior, nueva) -> seleccionar(nueva));
@@ -162,6 +180,20 @@ public class CategoriaController {
         } catch (SQLException e) {
             mostrarMensaje(Alert.AlertType.ERROR, "No se pudieron cargar las categorías: " + e.getMessage());
         }
+        actualizarResultados();
+    }
+
+    private void filtrar(String texto) {
+        String busqueda = texto == null ? "" : texto.trim().toLowerCase();
+
+        categoriasFiltradas.setPredicate(categoria ->
+                busqueda.isEmpty() || categoria.getNombre().toLowerCase().contains(busqueda));
+
+        actualizarResultados();
+    }
+
+    private void actualizarResultados() {
+        lblResultados.setText(categoriasFiltradas.size() + " de " + categorias.size() + " categorías");
     }
 
     private boolean validar() {
