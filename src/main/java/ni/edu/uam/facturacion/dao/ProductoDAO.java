@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class ProductoDAO {
                 """;
 
         try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
+             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, producto.getCodigo());
             ps.setString(2, producto.getNombre());
@@ -52,6 +53,13 @@ public class ProductoDAO {
             ps.setBoolean(7, producto.isActivo());
 
             ps.executeUpdate();
+
+            // Se asigna al objeto el id que generó PostgreSQL
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    producto.setId(rs.getInt(1));
+                }
+            }
         }
     }
 
