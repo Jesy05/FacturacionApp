@@ -1,30 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
 
-<VBox alignment="CENTER" spacing="15.0" styleClass="fondo"
-      stylesheets="@../css/estilos.css"
-      xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="ni.edu.uam.facturacion.controller.MenuPrincipalController">
+<VBox alignment="CENTER" spacing="15.0" styleClass="fondo" stylesheets="@../css/estilos.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ni.edu.uam.facturacion.controller.MenuPrincipalController">
     <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
 
     <ImageView fitHeight="200.0" preserveRatio="true" smooth="true">
         <image>
-            <Image url="@../images/logo.png"/>
+            <Image url="@../images/logo.png" />
         </image>
     </ImageView>
-    <Label text="Proyecto de JavaFX - Programación de Aplicaciones de Escritorio"
-           styleClass="subtitulo"/>
+    <Label styleClass="subtitulo" text="Proyecto de JavaFX - Programación de Aplicaciones de Escritorio" textFill="#19858f" />
 
-    <Label text="Sistema de Facturación" styleClass="titulo"/>
-    <Button text="Categorías" styleClass="boton-menu" onAction="#abrirCategorias"/>
-    <Button text="Productos" styleClass="boton-menu" onAction="#abrirProductos"/>
+    <Label styleClass="titulo" text="Sistema de Facturación" />
+   <Label text="Entre &quot;Categorías&quot; o &quot;Productos&quot; según lo que desee registrar o buscar." textFill="#217ad9" />
+    <Button onAction="#abrirCategorias" styleClass="boton-menu" text="Categorías" />
+    <Button onAction="#abrirProductos" styleClass="boton-menu" text="Productos" />
 </VBox>
