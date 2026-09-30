@@ -65,7 +65,15 @@
                 </ImageView>
             </graphic>
         </Button>
-        <Button text="Actualizar" onAction="#actualizar"/>
+        <Button text="Actualizar" onAction="#actualizar">
+            <graphic>
+                <ImageView fitWidth="16.0" fitHeight="16.0" preserveRatio="true" smooth="true">
+                    <image>
+                        <Image url="@../icons/actualizar.png"/>
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
         <Button text="Eliminar" onAction="#eliminar">
             <graphic>
                 <ImageView fitWidth="16.0" fitHeight="16.0" preserveRatio="true" smooth="true">
@@ -75,7 +83,15 @@
                 </ImageView>
             </graphic>
         </Button>
-        <Button text="Limpiar" onAction="#limpiar"/>
+        <Button text="Limpiar" onAction="#limpiar">
+            <graphic>
+                <ImageView fitWidth="16.0" fitHeight="16.0" preserveRatio="true" smooth="true">
+                    <image>
+                        <Image url="@../icons/limpiar.png"/>
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
         <Button text="Volver" onAction="#volver"/>
     </HBox>
 
