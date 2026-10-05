@@ -187,6 +187,32 @@ public class CategoriaDAO {
         return false;
     }
 
+    /**
+     * Indica si la categoría tiene productos asociados (si los tiene, no se puede eliminar).
+     */
+    public boolean tieneProductos(int categoriaId) throws SQLException {
+
+        String sql = """
+                SELECT COUNT(*)
+                FROM producto
+                WHERE categoria_id = ?
+                """;
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setInt(1, categoriaId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+
+        return false;
+    }
+
     private Categoria mapear(ResultSet rs) throws SQLException {
 
         return new Categoria(

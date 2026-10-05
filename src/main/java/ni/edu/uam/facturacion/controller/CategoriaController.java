@@ -55,8 +55,6 @@ public class CategoriaController {
     // Lista que muestra solo las categorías que coinciden con la búsqueda
     private final FilteredList<Categoria> categoriasFiltradas = new FilteredList<>(categorias, c -> true);
 
-    private Categoria categoriaSeleccionada;
-
     @FXML
     private void initialize() {
         colId.setCellValueFactory(c -> new SimpleIntegerProperty(c.getValue().getId()));
@@ -147,31 +145,38 @@ public class CategoriaController {
 
     @FXML
     private void eliminar() {
-        if (categoriaSeleccionada == null) {
-            Mensajes.mostrarAdvertencia("Seleccione una categoría", "Seleccione una categoría de la tabla.");
+        Categoria seleccionada = tablaCategorias.getSelectionModel().getSelectedItem();
+
+        if (seleccionada == null) {
+            Mensajes.mostrarAdvertencia("Seleccione una categoría",
+                    "Debe seleccionar la categoría que desea eliminar.");
             return;
         }
 
         if (!Mensajes.confirmar("Eliminar categoría",
-                "¿Eliminar la categoría \"" + categoriaSeleccionada.getNombre() + "\"?")) {
+                "¿Eliminar la categoría \"" + seleccionada.getNombre() + "\"?")) {
             return;
         }
 
         try {
-            categoriaDAO.eliminar(categoriaSeleccionada.getId());
+            // Integridad referencial: se revisa antes del DELETE en vez de esperar el error de la llave foránea
+            if (categoriaDAO.tieneProductos(seleccionada.getId())) {
+                Mensajes.mostrarAdvertencia("No se puede eliminar",
+                        "No puede eliminar la categoría porque tiene productos asociados. "
+                                + "Puede desmarcar \"Activa\" para desactivarla.");
+                return;
+            }
+
+            categoriaDAO.eliminar(seleccionada.getId());
             limpiar();
             cargarCategorias();
         } catch (SQLException e) {
-            // La llave foránea impide borrar una categoría que tiene productos
-            Mensajes.mostrarError("No se puede eliminar",
-                    "No se puede eliminar porque tiene productos asociados. "
-                            + "Desmarque \"Activa\" para desactivarla.");
+            Mensajes.mostrarError("Error de base de datos", "No se pudo eliminar: " + e.getMessage());
         }
     }
 
     @FXML
     private void limpiar() {
-        categoriaSeleccionada = null;
         txtNombre.clear();
         chkActiva.setSelected(true);
         tablaCategorias.getSelectionModel().clearSelection();
@@ -187,7 +192,6 @@ public class CategoriaController {
             return;
         }
 
-        categoriaSeleccionada = categoria;
         txtNombre.setText(categoria.getNombre());
         chkActiva.setSelected(categoria.isActiva());
     }
