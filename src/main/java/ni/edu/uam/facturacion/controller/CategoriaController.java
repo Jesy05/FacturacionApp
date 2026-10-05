@@ -80,17 +80,22 @@ public class CategoriaController {
 
     @FXML
     private void guardar() {
-        if (!validar()) {
+        if (!validarCategoria()) {
             return;
         }
 
-        Categoria categoria = new Categoria(
-                null,
-                txtNombre.getText().trim(),
-                chkActiva.isSelected()
-        );
+        String nombre = txtNombre.getText().trim();
 
         try {
+            if (categoriaDAO.existeNombre(nombre)) {
+                Mensajes.mostrarAdvertencia("Categoría duplicada",
+                        "Ya existe una categoría con ese nombre.");
+                txtNombre.requestFocus();
+                return;
+            }
+
+            Categoria categoria = new Categoria(null, nombre, chkActiva.isSelected());
+
             categoriaDAO.guardar(categoria);
             Mensajes.mostrarExito("Categoría registrada", "La categoría se guardó correctamente.");
             limpiar();
@@ -102,26 +107,42 @@ public class CategoriaController {
 
     @FXML
     private void actualizar() {
-        if (categoriaSeleccionada == null) {
-            Mensajes.mostrarAdvertencia("Seleccione una categoría", "Seleccione una categoría de la tabla.");
+        Categoria seleccionada = tablaCategorias.getSelectionModel().getSelectedItem();
+
+        if (seleccionada == null) {
+            Mensajes.mostrarAdvertencia("Seleccione una categoría",
+                    "Debe seleccionar la categoría que desea actualizar.");
             return;
         }
 
-        if (!validar()) {
+        // Se valida nuevamente el nombre antes de ejecutar el UPDATE
+        if (!validarCategoria()) {
             return;
         }
 
-        categoriaSeleccionada.setNombre(txtNombre.getText().trim());
-        categoriaSeleccionada.setActiva(chkActiva.isSelected());
+        String nombre = txtNombre.getText().trim();
 
         try {
-            categoriaDAO.actualizar(categoriaSeleccionada);
+            // Se excluye la categoría seleccionada para que su propio nombre no cuente como duplicado
+            if (categoriaDAO.existeNombre(nombre, seleccionada.getId())) {
+                Mensajes.mostrarAdvertencia("Categoría duplicada",
+                        "Ya existe otra categoría con ese nombre.");
+                txtNombre.requestFocus();
+                return;
+            }
+
+            seleccionada.setNombre(nombre);
+            seleccionada.setActiva(chkActiva.isSelected());
+
+            categoriaDAO.actualizar(seleccionada);
             Mensajes.mostrarExito("Categoría actualizada", "La categoría se actualizó correctamente.");
             limpiar();
-            cargarCategorias();
         } catch (SQLException e) {
             Mensajes.mostrarError("Error de base de datos", "No se pudo actualizar: " + e.getMessage());
         }
+
+        // Se recarga para que la tabla muestre lo que realmente quedó en la base de datos
+        cargarCategorias();
     }
 
     @FXML
@@ -193,11 +214,16 @@ public class CategoriaController {
         lblResultados.setText(categoriasFiltradas.size() + " de " + categorias.size() + " categorías");
     }
 
-    private boolean validar() {
-        if (txtNombre.getText() == null || txtNombre.getText().isBlank()) {
-            Mensajes.mostrarAdvertencia("Validación", "El nombre es obligatorio.");
+    // trim() hace que un nombre con solo espacios quede vacío y también se rechace
+    private boolean validarCategoria() {
+        String nombre = txtNombre.getText() == null ? "" : txtNombre.getText().trim();
+
+        if (nombre.isEmpty()) {
+            Mensajes.mostrarError("Validación", "El nombre de la categoría es obligatorio.");
+            txtNombre.requestFocus();
             return false;
         }
+
         return true;
     }
 }

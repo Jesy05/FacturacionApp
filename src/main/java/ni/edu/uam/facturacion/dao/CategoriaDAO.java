@@ -132,6 +132,61 @@ public class CategoriaDAO {
         }
     }
 
+    /**
+     * Indica si ya existe una categoría con ese nombre (sin distinguir mayúsculas).
+     */
+    public boolean existeNombre(String nombre) throws SQLException {
+
+        String sql = """
+                SELECT COUNT(*)
+                FROM categoria
+                WHERE LOWER(nombre) = LOWER(?)
+                """;
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setString(1, nombre);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Igual que existeNombre, pero sin tomar en cuenta la categoría que se está
+     * actualizando, para que conservar su propio nombre no cuente como duplicado.
+     */
+    public boolean existeNombre(String nombre, int idExcluido) throws SQLException {
+
+        String sql = """
+                SELECT COUNT(*)
+                FROM categoria
+                WHERE LOWER(nombre) = LOWER(?)
+                  AND id <> ?
+                """;
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setString(1, nombre);
+            ps.setInt(2, idExcluido);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+
+        return false;
+    }
+
     private Categoria mapear(ResultSet rs) throws SQLException {
 
         return new Categoria(
