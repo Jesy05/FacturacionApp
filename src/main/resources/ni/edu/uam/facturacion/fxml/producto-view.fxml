@@ -31,9 +31,6 @@
                 <Label text="Existencia:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
                 <TextField fx:id="txtExistencia" promptText="0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
-                <Label text="Ruta imagen:" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                <TextField fx:id="txtRutaImagen" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-
                 <CheckBox fx:id="chkActivo" selected="true" text="Producto activo" GridPane.columnIndex="1" GridPane.rowIndex="3" />
               <columnConstraints>
                  <ColumnConstraints />

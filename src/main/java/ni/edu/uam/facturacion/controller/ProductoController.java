@@ -54,9 +54,6 @@ public class ProductoController {
     private TextField txtExistencia;
 
     @FXML
-    private TextField txtRutaImagen;
-
-    @FXML
     private CheckBox chkActivo;
 
     @FXML
@@ -176,7 +173,6 @@ public class ProductoController {
         productoSeleccionado.setCategoria(datos.getCategoria());
         productoSeleccionado.setPrecioVenta(datos.getPrecioVenta());
         productoSeleccionado.setExistencia(datos.getExistencia());
-        productoSeleccionado.setRutaImagen(datos.getRutaImagen());
         productoSeleccionado.setActivo(datos.isActivo());
 
         try {
@@ -225,7 +221,6 @@ public class ProductoController {
         cmbCategoria.getSelectionModel().clearSelection();
         txtPrecio.clear();
         txtExistencia.clear();
-        txtRutaImagen.clear();
         chkActivo.setSelected(true);
         tablaProductos.getSelectionModel().clearSelection();
     }
@@ -304,7 +299,6 @@ public class ProductoController {
         txtNombre.setText(producto.getNombre());
         txtPrecio.setText(producto.getPrecioVenta().toPlainString());
         txtExistencia.setText(String.valueOf(producto.getExistencia()));
-        txtRutaImagen.setText(producto.getRutaImagen());
         chkActivo.setSelected(producto.isActivo());
 
         // Se busca por id porque el objeto del ComboBox es otra instancia
@@ -374,8 +368,6 @@ public class ProductoController {
             return null;
         }
 
-        String rutaImagen = txtRutaImagen.getText() == null ? "" : txtRutaImagen.getText().trim();
-
         return new Producto(
                 null,
                 codigo,
@@ -383,7 +375,6 @@ public class ProductoController {
                 categoria,
                 precio,
                 existencia,
-                rutaImagen.isEmpty() ? null : rutaImagen,
                 chkActivo.isSelected()
         );
     }
