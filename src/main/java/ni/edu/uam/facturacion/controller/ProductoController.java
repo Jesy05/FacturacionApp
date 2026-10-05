@@ -141,7 +141,7 @@ public class ProductoController {
         try {
             Producto producto = obtenerProductoFormulario();
 
-            if (existeCodigo(producto.getCodigo(), null)) {
+            if (productoDAO.existeCodigo(producto.getCodigo())) {
                 Mensajes.mostrarAdvertencia("Código duplicado", "Ya existe un producto con ese código.");
                 txtCodigo.requestFocus();
                 return;
@@ -172,7 +172,7 @@ public class ProductoController {
             Producto datos = obtenerProductoFormulario();
 
             // El código no puede pertenecer a otro producto
-            if (existeCodigo(datos.getCodigo(), productoSeleccionado.getId())) {
+            if (productoDAO.existeCodigo(datos.getCodigo(), productoSeleccionado.getId())) {
                 Mensajes.mostrarAdvertencia("Código duplicado", "Ya existe un producto con ese código.");
                 txtCodigo.requestFocus();
                 return;
@@ -389,13 +389,6 @@ public class ProductoController {
 
     private String texto(TextField campo) {
         return campo.getText() == null ? "" : campo.getText().trim();
-    }
-
-    // Se revisa la lista original (no la filtrada) para no dejar pasar duplicados ocultos
-    private boolean existeCodigo(String codigo, Integer idExcluido) {
-        return productos.stream()
-                .anyMatch(p -> p.getCodigo().equalsIgnoreCase(codigo)
-                        && !p.getId().equals(idExcluido));
     }
 
     private void cargarCategorias() {

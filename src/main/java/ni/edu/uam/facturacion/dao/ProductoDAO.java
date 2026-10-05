@@ -142,6 +142,61 @@ public class ProductoDAO {
         }
     }
 
+    /**
+     * Indica si ya existe un producto con ese código (P001 y p001 se consideran iguales).
+     */
+    public boolean existeCodigo(String codigo) throws SQLException {
+
+        String sql = """
+                SELECT COUNT(*)
+                FROM producto
+                WHERE LOWER(codigo) = LOWER(?)
+                """;
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setString(1, codigo);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Igual que existeCodigo, pero sin tomar en cuenta el producto que se está
+     * actualizando, para que conservar su propio código no cuente como duplicado.
+     */
+    public boolean existeCodigo(String codigo, int idExcluido) throws SQLException {
+
+        String sql = """
+                SELECT COUNT(*)
+                FROM producto
+                WHERE LOWER(codigo) = LOWER(?)
+                  AND id <> ?
+                """;
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setString(1, codigo);
+            ps.setInt(2, idExcluido);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+
+        return false;
+    }
+
     private Producto mapear(ResultSet rs) throws SQLException {
 
         Categoria categoria = new Categoria(
