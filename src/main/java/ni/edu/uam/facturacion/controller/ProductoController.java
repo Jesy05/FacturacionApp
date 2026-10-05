@@ -138,17 +138,22 @@ public class ProductoController {
 
     @FXML
     private void guardar() {
-        Producto producto = leerFormulario(null);
-        if (producto == null) {
-            return;
-        }
-
         try {
+            Producto producto = obtenerProductoFormulario();
+
+            if (existeCodigo(producto.getCodigo(), null)) {
+                Mensajes.mostrarAdvertencia("Código duplicado", "Ya existe un producto con ese código.");
+                txtCodigo.requestFocus();
+                return;
+            }
+
             productoDAO.guardar(producto);
             productos.add(producto);
-            Mensajes.mostrarExito("Producto registrado", "El producto se guardó correctamente.");
+            Mensajes.mostrarExito("Producto registrado", "La información fue almacenada correctamente.");
             limpiar();
             aplicarFiltros();
+        } catch (IllegalArgumentException e) {
+            Mensajes.mostrarAdvertencia("Validación", e.getMessage());
         } catch (SQLException e) {
             Mensajes.mostrarError("Error de base de datos", "No se pudo guardar: " + e.getMessage());
         }
@@ -157,27 +162,36 @@ public class ProductoController {
     @FXML
     private void actualizar() {
         if (productoSeleccionado == null) {
-            Mensajes.mostrarAdvertencia("Seleccione un producto", "Seleccione un producto de la tabla.");
+            Mensajes.mostrarAdvertencia("Seleccione un producto",
+                    "Debe seleccionar el producto que desea actualizar.");
             return;
         }
-
-        Producto datos = leerFormulario(productoSeleccionado.getId());
-        if (datos == null) {
-            return;
-        }
-
-        // Se modifica el mismo objeto seleccionado, no se crea un registro nuevo
-        productoSeleccionado.setCodigo(datos.getCodigo());
-        productoSeleccionado.setNombre(datos.getNombre());
-        productoSeleccionado.setCategoria(datos.getCategoria());
-        productoSeleccionado.setPrecioVenta(datos.getPrecioVenta());
-        productoSeleccionado.setExistencia(datos.getExistencia());
-        productoSeleccionado.setActivo(datos.isActivo());
 
         try {
+            // Se validan nuevamente todos los campos antes del UPDATE
+            Producto datos = obtenerProductoFormulario();
+
+            // El código no puede pertenecer a otro producto
+            if (existeCodigo(datos.getCodigo(), productoSeleccionado.getId())) {
+                Mensajes.mostrarAdvertencia("Código duplicado", "Ya existe un producto con ese código.");
+                txtCodigo.requestFocus();
+                return;
+            }
+
+            // Se modifica el mismo objeto seleccionado, no se crea un registro nuevo
+            productoSeleccionado.setCodigo(datos.getCodigo());
+            productoSeleccionado.setNombre(datos.getNombre());
+            productoSeleccionado.setCategoria(datos.getCategoria());
+            productoSeleccionado.setPrecioVenta(datos.getPrecioVenta());
+            productoSeleccionado.setExistencia(datos.getExistencia());
+            productoSeleccionado.setActivo(datos.isActivo());
+
             productoDAO.actualizar(productoSeleccionado);
             Mensajes.mostrarExito("Producto actualizado", "El producto se actualizó correctamente.");
             limpiar();
+        } catch (IllegalArgumentException e) {
+            Mensajes.mostrarAdvertencia("Validación", e.getMessage());
+            return;
         } catch (SQLException e) {
             Mensajes.mostrarError("Error de base de datos", "No se pudo actualizar: " + e.getMessage());
             // Se recarga para que la tabla vuelva a mostrar lo que hay en la base de datos
@@ -309,60 +323,57 @@ public class ProductoController {
     }
 
     /**
-     * Valida el formulario y devuelve un Producto con sus datos, o null si algo es incorrecto.
-     *
-     * @param idExcluido id del producto que se está actualizando (para que su propio código
-     *                   no cuente como duplicado); null cuando es un producto nuevo
+     * Valida el formulario y construye el Producto.
+     * Si algún dato es incorrecto lanza IllegalArgumentException con el mensaje para el usuario
+     * y deja el cursor en el campo que hay que corregir.
      */
-    private Producto leerFormulario(Integer idExcluido) {
-        String codigo = txtCodigo.getText().trim();
-        String nombre = txtNombre.getText().trim();
-        Categoria categoria = cmbCategoria.getValue();
+    private Producto obtenerProductoFormulario() {
+        String codigo = texto(txtCodigo);
+        String nombre = texto(txtNombre);
 
         if (codigo.isEmpty()) {
-            Mensajes.mostrarAdvertencia("Validación", "El código es obligatorio.");
-            return null;
+            txtCodigo.requestFocus();
+            throw new IllegalArgumentException("El código es obligatorio.");
         }
 
         if (nombre.isEmpty()) {
-            Mensajes.mostrarAdvertencia("Validación", "El nombre es obligatorio.");
-            return null;
+            txtNombre.requestFocus();
+            throw new IllegalArgumentException("El nombre es obligatorio.");
         }
+
+        Categoria categoria = cmbCategoria.getSelectionModel().getSelectedItem();
 
         if (categoria == null) {
-            Mensajes.mostrarAdvertencia("Validación", "Debe seleccionar una categoría.");
-            return null;
+            cmbCategoria.requestFocus();
+            throw new IllegalArgumentException("Debe seleccionar una categoría.");
         }
 
+        // Lo que viene de un TextField es texto: si no es un número, la conversión lanza NumberFormatException
         BigDecimal precio;
         try {
-            precio = new BigDecimal(txtPrecio.getText().trim());
+            precio = new BigDecimal(texto(txtPrecio));
         } catch (NumberFormatException e) {
-            Mensajes.mostrarAdvertencia("Precio incorrecto", "El precio debe ser un valor numérico.");
-            return null;
+            txtPrecio.requestFocus();
+            throw new IllegalArgumentException("El precio debe ser un valor numérico.");
         }
 
         if (precio.compareTo(BigDecimal.ZERO) <= 0) {
-            Mensajes.mostrarAdvertencia("Precio incorrecto", "El precio de venta debe ser mayor que cero.");
-            return null;
+            txtPrecio.requestFocus();
+            throw new IllegalArgumentException("El precio de venta debe ser mayor que cero.");
         }
 
+        // parseInt también rechaza decimales como 10.5
         int existencia;
         try {
-            existencia = Integer.parseInt(txtExistencia.getText().trim());
+            existencia = Integer.parseInt(texto(txtExistencia));
         } catch (NumberFormatException e) {
-            Mensajes.mostrarAdvertencia("Existencia incorrecta", "La existencia debe ser un número entero.");
-            return null;
+            txtExistencia.requestFocus();
+            throw new IllegalArgumentException("La existencia debe ser un número entero.");
         }
 
         if (existencia < 0) {
-            Mensajes.mostrarAdvertencia("Existencia incorrecta", "La existencia no puede ser negativa.");
-            return null;
-        }
-
-        if (existeCodigo(codigo, idExcluido)) {
-            Mensajes.mostrarAdvertencia("Código duplicado", "Ya existe un producto con ese código.");
-            return null;
+            txtExistencia.requestFocus();
+            throw new IllegalArgumentException("La existencia no puede ser negativa.");
         }
 
         return new Producto(
@@ -374,6 +385,10 @@ public class ProductoController {
                 existencia,
                 chkActivo.isSelected()
         );
+    }
+
+    private String texto(TextField campo) {
+        return campo.getText() == null ? "" : campo.getText().trim();
     }
 
     // Se revisa la lista original (no la filtrada) para no dejar pasar duplicados ocultos
