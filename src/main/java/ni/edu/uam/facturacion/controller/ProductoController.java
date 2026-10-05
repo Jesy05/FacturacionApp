@@ -155,7 +155,7 @@ public class ProductoController {
         } catch (IllegalArgumentException e) {
             Mensajes.mostrarAdvertencia("Validación", e.getMessage());
         } catch (SQLException e) {
-            Mensajes.mostrarError("Error de base de datos", "No se pudo guardar: " + e.getMessage());
+            Mensajes.mostrarErrorBaseDatos("No fue posible registrar el producto.", e);
         }
     }
 
@@ -193,7 +193,7 @@ public class ProductoController {
             Mensajes.mostrarAdvertencia("Validación", e.getMessage());
             return;
         } catch (SQLException e) {
-            Mensajes.mostrarError("Error de base de datos", "No se pudo actualizar: " + e.getMessage());
+            Mensajes.mostrarErrorBaseDatos("No fue posible actualizar el producto.", e);
             // Se recarga para que la tabla vuelva a mostrar lo que hay en la base de datos
             cargarProductos();
         }
@@ -220,7 +220,7 @@ public class ProductoController {
             limpiar();
             actualizarResultados();
         } catch (SQLException e) {
-            Mensajes.mostrarError("Error de base de datos", "No se pudo eliminar: " + e.getMessage());
+            Mensajes.mostrarErrorBaseDatos("No fue posible eliminar el producto.", e);
         }
     }
 
@@ -400,7 +400,7 @@ public class ProductoController {
             cmbFiltroCategoria.setItems(opcionesFiltro);
             cmbFiltroCategoria.setValue(TODAS_LAS_CATEGORIAS);
         } catch (SQLException e) {
-            Mensajes.mostrarError("Error de base de datos", "No se pudieron cargar las categorías: " + e.getMessage());
+            Mensajes.mostrarErrorBaseDatos("No fue posible cargar las categorías. Verifique la conexión con la base de datos.", e);
         }
     }
 
@@ -408,7 +408,7 @@ public class ProductoController {
         try {
             productos.setAll(productoDAO.listar());
         } catch (SQLException e) {
-            Mensajes.mostrarError("Error de base de datos", "No se pudieron cargar los productos: " + e.getMessage());
+            Mensajes.mostrarErrorBaseDatos("No fue posible cargar los productos. Verifique la conexión con la base de datos.", e);
         }
         aplicarFiltros();
     }

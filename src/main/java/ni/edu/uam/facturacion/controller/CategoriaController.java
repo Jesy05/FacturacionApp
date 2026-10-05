@@ -99,7 +99,7 @@ public class CategoriaController {
             limpiar();
             cargarCategorias();
         } catch (SQLException e) {
-            Mensajes.mostrarError("Error de base de datos", "No se pudo guardar: " + e.getMessage());
+            Mensajes.mostrarErrorBaseDatos("No fue posible registrar la categoría.", e);
         }
     }
 
@@ -136,7 +136,7 @@ public class CategoriaController {
             Mensajes.mostrarExito("Categoría actualizada", "La categoría se actualizó correctamente.");
             limpiar();
         } catch (SQLException e) {
-            Mensajes.mostrarError("Error de base de datos", "No se pudo actualizar: " + e.getMessage());
+            Mensajes.mostrarErrorBaseDatos("No fue posible actualizar la categoría.", e);
         }
 
         // Se recarga para que la tabla muestre lo que realmente quedó en la base de datos
@@ -171,7 +171,7 @@ public class CategoriaController {
             limpiar();
             cargarCategorias();
         } catch (SQLException e) {
-            Mensajes.mostrarError("Error de base de datos", "No se pudo eliminar: " + e.getMessage());
+            Mensajes.mostrarErrorBaseDatos("No fue posible eliminar la categoría.", e);
         }
     }
 
@@ -200,7 +200,7 @@ public class CategoriaController {
         try {
             categorias.setAll(categoriaDAO.listar());
         } catch (SQLException e) {
-            Mensajes.mostrarError("Error de base de datos", "No se pudieron cargar las categorías: " + e.getMessage());
+            Mensajes.mostrarErrorBaseDatos("No fue posible cargar las categorías. Verifique la conexión con la base de datos.", e);
         }
         actualizarResultados();
     }

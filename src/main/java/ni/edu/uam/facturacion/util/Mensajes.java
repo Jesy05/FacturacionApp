@@ -3,6 +3,8 @@ package ni.edu.uam.facturacion.util;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 
+import java.sql.SQLException;
+
 /**
  * Cuadros de diálogo para informar al usuario lo que ocurrió en una operación.
  */
@@ -21,6 +23,15 @@ public final class Mensajes {
 
     public static void mostrarError(String titulo, String mensaje) {
         mostrar(Alert.AlertType.ERROR, titulo, mensaje);
+    }
+
+    /**
+     * Informa un error de base de datos con un mensaje comprensible para el usuario.
+     * El detalle técnico de la SQLException se escribe en la consola, no en la ventana.
+     */
+    public static void mostrarErrorBaseDatos(String mensaje, SQLException e) {
+        System.err.println("[SQLException] " + mensaje + " -> " + e.getMessage());
+        mostrarError("Error de base de datos", mensaje);
     }
 
     /**
