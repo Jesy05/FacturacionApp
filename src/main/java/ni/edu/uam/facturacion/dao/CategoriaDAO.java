@@ -132,9 +132,7 @@ public class CategoriaDAO {
         }
     }
 
-    /**
-     * Indica si ya existe una categoría con ese nombre (sin distinguir mayúsculas).
-     */
+
     public boolean existeNombre(String nombre) throws SQLException {
 
         String sql = """
@@ -158,10 +156,6 @@ public class CategoriaDAO {
         return false;
     }
 
-    /**
-     * Igual que existeNombre, pero sin tomar en cuenta la categoría que se está
-     * actualizando, para que conservar su propio nombre no cuente como duplicado.
-     */
     public boolean existeNombre(String nombre, int idExcluido) throws SQLException {
 
         String sql = """
@@ -187,9 +181,7 @@ public class CategoriaDAO {
         return false;
     }
 
-    /**
-     * Indica si la categoría tiene productos asociados (si los tiene, no se puede eliminar).
-     */
+
     public boolean tieneProductos(int categoriaId) throws SQLException {
 
         String sql = """

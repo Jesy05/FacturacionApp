@@ -95,10 +95,8 @@ public class ProductoController {
 
     private final CategoriaDAO categoriaDAO = new CategoriaDAO();
 
-    // Lista original: conserva todos los productos
     private final ObservableList<Producto> productos = FXCollections.observableArrayList();
 
-    // Lista filtrada: solo decide cuáles productos se muestran
     private final FilteredList<Producto> productosFiltrados = new FilteredList<>(productos, p -> true);
 
     private Producto productoSeleccionado;
@@ -114,8 +112,6 @@ public class ProductoController {
         colActivo.setCellValueFactory(c -> new SimpleBooleanProperty(c.getValue().isActivo()));
         colActivo.setCellFactory(CheckBoxTableCell.forTableColumn(colActivo));
 
-        // ObservableList → FilteredList → TableView
-        // (SortedList permite seguir ordenando al hacer clic en las columnas)
         SortedList<Producto> productosOrdenados = new SortedList<>(productosFiltrados);
         productosOrdenados.comparatorProperty().bind(tablaProductos.comparatorProperty());
         tablaProductos.setItems(productosOrdenados);
@@ -127,7 +123,6 @@ public class ProductoController {
                 ESTADO_TODOS, ESTADO_ACTIVOS, ESTADO_INACTIVOS));
         cmbFiltroEstado.setValue(ESTADO_TODOS);
 
-        // Los filtros se aplican en cuanto cambian, junto con la búsqueda
         txtBuscar.textProperty().addListener((obs, anterior, texto) -> aplicarFiltros());
         cmbFiltroEstado.valueProperty().addListener((obs, anterior, estado) -> aplicarFiltros());
         cmbFiltroCategoria.valueProperty().addListener((obs, anterior, categoria) -> aplicarFiltros());
@@ -194,7 +189,7 @@ public class ProductoController {
             return;
         } catch (SQLException e) {
             Mensajes.mostrarErrorBaseDatos("No fue posible actualizar el producto.", e);
-            // Se recarga para que la tabla vuelva a mostrar lo que hay en la base de datos
+            // se recarga para que la tabla vuelva a mostrar lo que hay en la base de datos
             cargarProductos();
         }
 
@@ -267,7 +262,6 @@ public class ProductoController {
         actualizarResultados();
     }
 
-    // La búsqueda no distingue mayúsculas de minúsculas: laptop, Laptop y LAPTOP dan lo mismo
     private boolean coincideBusqueda(Producto producto, String busqueda) {
         if (busqueda.isEmpty()) {
             return true;
@@ -322,11 +316,7 @@ public class ProductoController {
                 );
     }
 
-    /**
-     * Valida el formulario y construye el Producto.
-     * Si algún dato es incorrecto lanza IllegalArgumentException con el mensaje para el usuario
-     * y deja el cursor en el campo que hay que corregir.
-     */
+
     private Producto obtenerProductoFormulario() {
         String codigo = texto(txtCodigo);
         String nombre = texto(txtNombre);

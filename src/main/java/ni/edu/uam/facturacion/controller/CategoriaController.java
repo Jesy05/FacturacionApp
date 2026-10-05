@@ -52,7 +52,6 @@ public class CategoriaController {
 
     private final ObservableList<Categoria> categorias = FXCollections.observableArrayList();
 
-    // Lista que muestra solo las categorías que coinciden con la búsqueda
     private final FilteredList<Categoria> categoriasFiltradas = new FilteredList<>(categorias, c -> true);
 
     @FXML
@@ -62,12 +61,10 @@ public class CategoriaController {
         colActiva.setCellValueFactory(c -> new SimpleBooleanProperty(c.getValue().isActiva()));
         colActiva.setCellFactory(CheckBoxTableCell.forTableColumn(colActiva));
 
-        // SortedList permite seguir ordenando la tabla al hacer clic en las columnas
         SortedList<Categoria> categoriasOrdenadas = new SortedList<>(categoriasFiltradas);
         categoriasOrdenadas.comparatorProperty().bind(tablaCategorias.comparatorProperty());
         tablaCategorias.setItems(categoriasOrdenadas);
 
-        // Cada vez que se escribe en el buscador se vuelve a filtrar la tabla
         txtBuscar.textProperty().addListener((obs, anterior, texto) -> filtrar(texto));
 
         tablaCategorias.getSelectionModel().selectedItemProperty()
@@ -113,7 +110,6 @@ public class CategoriaController {
             return;
         }
 
-        // Se valida nuevamente el nombre antes de ejecutar el UPDATE
         if (!validarCategoria()) {
             return;
         }
@@ -121,7 +117,6 @@ public class CategoriaController {
         String nombre = txtNombre.getText().trim();
 
         try {
-            // Se excluye la categoría seleccionada para que su propio nombre no cuente como duplicado
             if (categoriaDAO.existeNombre(nombre, seleccionada.getId())) {
                 Mensajes.mostrarAdvertencia("Categoría duplicada",
                         "Ya existe otra categoría con ese nombre.");
@@ -139,7 +134,6 @@ public class CategoriaController {
             Mensajes.mostrarErrorBaseDatos("No fue posible actualizar la categoría.", e);
         }
 
-        // Se recarga para que la tabla muestre lo que realmente quedó en la base de datos
         cargarCategorias();
     }
 
@@ -159,7 +153,6 @@ public class CategoriaController {
         }
 
         try {
-            // Integridad referencial: se revisa antes del DELETE en vez de esperar el error de la llave foránea
             if (categoriaDAO.tieneProductos(seleccionada.getId())) {
                 Mensajes.mostrarAdvertencia("No se puede eliminar",
                         "No puede eliminar la categoría porque tiene productos asociados. "
@@ -218,7 +211,6 @@ public class CategoriaController {
         lblResultados.setText(categoriasFiltradas.size() + " de " + categorias.size() + " categorías");
     }
 
-    // trim() hace que un nombre con solo espacios quede vacío y también se rechace
     private boolean validarCategoria() {
         String nombre = txtNombre.getText() == null ? "" : txtNombre.getText().trim();
 

@@ -168,10 +168,7 @@ public class ProductoDAO {
         return false;
     }
 
-    /**
-     * Igual que existeCodigo, pero sin tomar en cuenta el producto que se está
-     * actualizando, para que conservar su propio código no cuente como duplicado.
-     */
+
     public boolean existeCodigo(String codigo, int idExcluido) throws SQLException {
 
         String sql = """
