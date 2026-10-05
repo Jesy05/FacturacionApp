@@ -8,8 +8,6 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -18,6 +16,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import ni.edu.uam.facturacion.dao.CategoriaDAO;
 import ni.edu.uam.facturacion.model.Categoria;
+import ni.edu.uam.facturacion.util.Mensajes;
 import ni.edu.uam.facturacion.util.SceneManager;
 
 import java.io.IOException;
@@ -93,18 +92,18 @@ public class CategoriaController {
 
         try {
             categoriaDAO.guardar(categoria);
-            mostrarMensaje(Alert.AlertType.INFORMATION, "Categoría guardada correctamente.");
+            Mensajes.mostrarExito("Categoría registrada", "La categoría se guardó correctamente.");
             limpiar();
             cargarCategorias();
         } catch (SQLException e) {
-            mostrarMensaje(Alert.AlertType.ERROR, "No se pudo guardar: " + e.getMessage());
+            Mensajes.mostrarError("Error de base de datos", "No se pudo guardar: " + e.getMessage());
         }
     }
 
     @FXML
     private void actualizar() {
         if (categoriaSeleccionada == null) {
-            mostrarMensaje(Alert.AlertType.WARNING, "Seleccione una categoría de la tabla.");
+            Mensajes.mostrarAdvertencia("Seleccione una categoría", "Seleccione una categoría de la tabla.");
             return;
         }
 
@@ -117,25 +116,23 @@ public class CategoriaController {
 
         try {
             categoriaDAO.actualizar(categoriaSeleccionada);
-            mostrarMensaje(Alert.AlertType.INFORMATION, "Categoría actualizada correctamente.");
+            Mensajes.mostrarExito("Categoría actualizada", "La categoría se actualizó correctamente.");
             limpiar();
             cargarCategorias();
         } catch (SQLException e) {
-            mostrarMensaje(Alert.AlertType.ERROR, "No se pudo actualizar: " + e.getMessage());
+            Mensajes.mostrarError("Error de base de datos", "No se pudo actualizar: " + e.getMessage());
         }
     }
 
     @FXML
     private void eliminar() {
         if (categoriaSeleccionada == null) {
-            mostrarMensaje(Alert.AlertType.WARNING, "Seleccione una categoría de la tabla.");
+            Mensajes.mostrarAdvertencia("Seleccione una categoría", "Seleccione una categoría de la tabla.");
             return;
         }
 
-        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION,
-                "¿Eliminar la categoría \"" + categoriaSeleccionada.getNombre() + "\"?");
-
-        if (confirmacion.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK) {
+        if (!Mensajes.confirmar("Eliminar categoría",
+                "¿Eliminar la categoría \"" + categoriaSeleccionada.getNombre() + "\"?")) {
             return;
         }
 
@@ -145,7 +142,7 @@ public class CategoriaController {
             cargarCategorias();
         } catch (SQLException e) {
             // La llave foránea impide borrar una categoría que tiene productos
-            mostrarMensaje(Alert.AlertType.ERROR,
+            Mensajes.mostrarError("No se puede eliminar",
                     "No se puede eliminar porque tiene productos asociados. "
                             + "Desmarque \"Activa\" para desactivarla.");
         }
@@ -178,7 +175,7 @@ public class CategoriaController {
         try {
             categorias.setAll(categoriaDAO.listar());
         } catch (SQLException e) {
-            mostrarMensaje(Alert.AlertType.ERROR, "No se pudieron cargar las categorías: " + e.getMessage());
+            Mensajes.mostrarError("Error de base de datos", "No se pudieron cargar las categorías: " + e.getMessage());
         }
         actualizarResultados();
     }
@@ -198,15 +195,9 @@ public class CategoriaController {
 
     private boolean validar() {
         if (txtNombre.getText() == null || txtNombre.getText().isBlank()) {
-            mostrarMensaje(Alert.AlertType.WARNING, "El nombre es obligatorio.");
+            Mensajes.mostrarAdvertencia("Validación", "El nombre es obligatorio.");
             return false;
         }
         return true;
-    }
-
-    private void mostrarMensaje(Alert.AlertType tipo, String mensaje) {
-        Alert alert = new Alert(tipo, mensaje);
-        alert.setHeaderText(null);
-        alert.showAndWait();
     }
 }
